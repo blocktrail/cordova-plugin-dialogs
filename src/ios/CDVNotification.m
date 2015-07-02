@@ -91,6 +91,7 @@ static void soundCompletionCallback(SystemSoundID ssid, void* data);
 
             [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
                 textField.text = defaultText;
+                textField.secureTextEntry = true;   //create password input box on iOS8
             }];
         }
 
