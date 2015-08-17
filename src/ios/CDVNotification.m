@@ -36,7 +36,7 @@ static void soundCompletionCallback(SystemSoundID ssid, void* data);
  *  callbackId    The commmand callback id.
  *  dialogType    The type of alert view [alert | prompt].
  */
-- (void)showDialogWithMessage:(NSString*)message title:(NSString*)title buttons:(NSArray*)buttons defaultText:(NSString*)defaultText callbackId:(NSString*)callbackId dialogType:(NSString*)dialogType
+- (void)showDialogWithMessage:(NSString*)message title:(NSString*)title buttons:(NSArray*)buttons defaultText:(NSString*)defaultText isPassword:(BOOL)isPassword callbackId:(NSString*)callbackId dialogType:(NSString*)dialogType
 {
 
     NSUInteger count = [buttons count];
@@ -91,7 +91,7 @@ static void soundCompletionCallback(SystemSoundID ssid, void* data);
 
             [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
                 textField.text = defaultText;
-                textField.secureTextEntry = true;   //create password input box on iOS8
+                textField.secureTextEntry = isPassword == YES; // create password input box on iOS8
             }];
         }
 
@@ -117,7 +117,12 @@ static void soundCompletionCallback(SystemSoundID ssid, void* data);
         }
 
         if ([dialogType isEqualToString:DIALOG_TYPE_PROMPT]) {
-            alertView.alertViewStyle = UIAlertViewStyleSecureTextInput;     //set the input type to secure plaintext, instead of UIAlertViewStylePlainTextInput
+            if (isPassword == YES) {
+                alertView.alertViewStyle = UIAlertViewStyleSecureTextInput; // set the input type to secure plaintext
+            } else {
+                alertView.alertViewStyle = UIAlertViewStylePlainTextInput; //set the input type to plaintext
+            }
+
             UITextField* textField = [alertView textFieldAtIndex:0];
             textField.text = defaultText;
         }
@@ -136,7 +141,7 @@ static void soundCompletionCallback(SystemSoundID ssid, void* data);
     NSString* title = [command argumentAtIndex:1];
     NSString* buttons = [command argumentAtIndex:2];
 
-    [self showDialogWithMessage:message title:title buttons:@[buttons] defaultText:nil callbackId:callbackId dialogType:DIALOG_TYPE_ALERT];
+    [self showDialogWithMessage:message title:title buttons:@[buttons] defaultText:nil isPassword:NO callbackId:callbackId dialogType:DIALOG_TYPE_ALERT];
 }
 
 - (void)confirm:(CDVInvokedUrlCommand*)command
@@ -146,7 +151,7 @@ static void soundCompletionCallback(SystemSoundID ssid, void* data);
     NSString* title = [command argumentAtIndex:1];
     NSArray* buttons = [command argumentAtIndex:2];
 
-    [self showDialogWithMessage:message title:title buttons:buttons defaultText:nil callbackId:callbackId dialogType:DIALOG_TYPE_ALERT];
+    [self showDialogWithMessage:message title:title buttons:buttons defaultText:nil isPassword:NO callbackId:callbackId dialogType:DIALOG_TYPE_ALERT];
 }
 
 - (void)prompt:(CDVInvokedUrlCommand*)command
@@ -156,8 +161,9 @@ static void soundCompletionCallback(SystemSoundID ssid, void* data);
     NSString* title = [command argumentAtIndex:1];
     NSArray* buttons = [command argumentAtIndex:2];
     NSString* defaultText = [command argumentAtIndex:3];
+    BOOL isPassword = [[command argumentAtIndex:4] boolValue];
 
-    [self showDialogWithMessage:message title:title buttons:buttons defaultText:defaultText callbackId:callbackId dialogType:DIALOG_TYPE_PROMPT];
+    [self showDialogWithMessage:message title:title buttons:buttons defaultText:defaultText isPassword:isPassword callbackId:callbackId dialogType:DIALOG_TYPE_PROMPT];
 }
 
 /**

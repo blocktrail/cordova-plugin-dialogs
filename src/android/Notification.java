@@ -87,7 +87,7 @@ public class Notification extends CordovaPlugin {
             return true;
         }
         else if (action.equals("prompt")) {
-            this.prompt(args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), callbackContext);
+            this.prompt(args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), args.getBoolean(4), callbackContext);
             return true;
         }
         else if (action.equals("activityStart")) {
@@ -269,7 +269,7 @@ public class Notification extends CordovaPlugin {
      * @param buttonLabels      A comma separated list of button labels (Up to 3 buttons)
      * @param callbackContext   The callback context.
      */
-    public synchronized void prompt(final String message, final String title, final JSONArray buttonLabels, final String defaultText, final CallbackContext callbackContext) {
+    public synchronized void prompt(final String message, final String title, final JSONArray buttonLabels, final String defaultText, final boolean isPassword, final CallbackContext callbackContext) {
 
         final CordovaInterface cordova = this.cordova;
 
@@ -277,7 +277,11 @@ public class Notification extends CordovaPlugin {
             public void run() {
                 final EditText promptInput =  new EditText(cordova.getActivity());
                 promptInput.setHint(defaultText);
-                promptInput.setInputType(0x00000081);            //set the input type to secure plaintext
+                if (isPassword) {
+                    promptInput.setInputType(0x00000081); // set the input type to secure plaintext
+                } else {
+                    promptInput.setInputType(0x00000001); // set the input type to plaintext
+                }
                 AlertDialog.Builder dlg = createDialog(cordova); // new AlertDialog.Builder(cordova.getActivity(), AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
                 dlg.setMessage(message);
                 dlg.setTitle(title);
