@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 
 var exec = require('cordova/exec');
 var platform = require('cordova/platform');
@@ -90,13 +90,15 @@ module.exports = {
      * @param {String} title                Title of the dialog (default: "Prompt")
      * @param {Array} buttonLabels          Array of strings for the button labels (default: ["OK","Cancel"])
      * @param {String} defaultText          Textbox input value (default: empty string)
+     * @param {Boolean} isPassword          Textbox input should be secure (default: FALSE)
      */
-    prompt: function(message, resultCallback, title, buttonLabels, defaultText) {
+    prompt: function(message, resultCallback, title, buttonLabels, defaultText, isPassword) {
         var _message = (message || "Prompt message");
         var _title = (title || "Prompt");
         var _buttonLabels = (buttonLabels || ["OK","Cancel"]);
         var _defaultText = (defaultText || "");
-        exec(resultCallback, null, "Notification", "prompt", [_message, _title, _buttonLabels, _defaultText]);
+        var _isPassword = (isPassword || false);
+        exec(resultCallback, null, "Notification", "prompt", [_message, _title, _buttonLabels, _defaultText, _isPassword]);
     },
 
     /**
